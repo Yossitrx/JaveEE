@@ -7,9 +7,14 @@ import javax.persistence.*;
 @Table(name = "TASK")
 public class Task {
 
-	@Id @GeneratedValue
-	   @Column(name = "id")
-	   private int id;
+	
+	
+	@Id @GeneratedValue(strategy=GenerationType.AUTO)
+	   @Column(name = "task_id")
+	   private int taskID;
+	
+		@Column (name = "user_id")
+		private int userID;
 
 	   @Column(name = "title")
 	   private String title;
@@ -20,13 +25,22 @@ public class Task {
 
 	   public Task() {}
 	   
-	   public int getId() {
-	      return id;
+	   public int getTaskId() {
+	      return taskID;
 	   }
 	   
-	   public void setId( int id ) {
-	      this.id = id;
+	   public void setId( int taskID ) {
+	      this.taskID = taskID;
 	   }
+	   
+	   public int getUserId() {
+		      return userID;
+		   }
+		   
+	   public void setUserId( int userID ) {
+		      this.userID = userID;
+	   	}
+	   
 	   public String getTitle() {
 	      return title;
 	   }

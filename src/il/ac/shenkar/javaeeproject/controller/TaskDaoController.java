@@ -36,8 +36,8 @@ public class TaskDaoController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		
+		PrintWriter out = response.getWriter();
 		
-		PrintWriter out = response.getWriter();		
 //		StringBuffer sb = request.getRequestURL();
 //		String url = sb.toString();
 //		
@@ -53,9 +53,9 @@ public class TaskDaoController extends HttpServlet {
 //			
 //		} else if(url.endsWith("tasks")) {
 //			
-//			dispatcher = getServletContext().getRequestDispatcher("/coupons.jsp");
+//			dispatcher = getServletContext().getRequestDispatcher("/taskList.jsp");
 //			
-//			List tasks = null;
+//			List<Task> tasks = null;
 //			try {
 //				tasks = ToDoListDAO.getInstance().getTasks();
 //			} 
@@ -73,11 +73,9 @@ public class TaskDaoController extends HttpServlet {
 //		//the view for the very specific action the client sent a request to perform
 //		dispatcher.forward(request,response);
 		
-		out.println("here");
-
+		
 		ToDoListDAO dao = ToDoListDAO.getInstance();
 		
-//		dao.configuration();
 //		
 //		
 //		try {

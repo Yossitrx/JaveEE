@@ -13,14 +13,17 @@ public class ToDoListDAO implements IToDoListDao{
 
 	
 	private static ToDoListDAO instance;
-	private static SessionFactory factory;
+	private static SessionFactory factory = new AnnotationConfiguration()
+			.configure()
+			.addAnnotatedClass(Task.class)
+			.addAnnotatedClass(User.class)
+			.buildSessionFactory();
 
 	
 	private ToDoListDAO() {}
 	
 	public static ToDoListDAO getInstance() {
 		
-		System.out.println("SFasf");
 		if (instance == null) {
 			instance = new ToDoListDAO();
 		}
@@ -29,28 +32,17 @@ public class ToDoListDAO implements IToDoListDao{
 	
 	
 	
-	public void configuration() {
-		try{
-            factory = new AnnotationConfiguration().
-                      configure().
-                      addAnnotatedClass(Task.class).
-                      buildSessionFactory();
-         }catch (Throwable e) { 
-            System.err.println("Failed to create sessionFactory object." + e);
-            throw new ExceptionInInitializerError(e); 
-         }
-	}
-	
 	@Override
-	public int addTask(int taskID, String title, String taskBody) throws TasksPlatformException {
+	public int addTask(int userID, String title, String taskBody) throws TasksPlatformException {
 		
 		Session session = factory.openSession();
 	      Transaction tx = null;
 	      Integer id = null;
+	      
 	      try{
 	         tx = session.beginTransaction();
 	         Task task = new Task();
-	         task.setId(taskID);
+	         task.setUserId(userID);
 	         task.setTitle(title);
 	         task.setTaskBody(taskBody);
 	         
@@ -65,16 +57,19 @@ public class ToDoListDAO implements IToDoListDao{
 	      return id;
 	}
 
+	
 	@Override
-	public void deleteTask(int taskID) throws TasksPlatformException {
+	public void deleteTask(int userID, int taskID) throws TasksPlatformException {
 		
 	      Session session = factory.openSession();
 	      Transaction tx = null;
 	      try{
 	         tx = session.beginTransaction();
 	         Task task = (Task)session.get(Task.class, taskID); 
-	         session.delete(task); 
-	         tx.commit();
+	         if ( userID == task.getUserId()) {
+	        	 session.delete(task); 
+		         tx.commit(); 
+	         }
 	      }catch (HibernateException e) {
 	         if (tx!=null) tx.rollback();
 	         e.printStackTrace(); 
@@ -83,19 +78,22 @@ public class ToDoListDAO implements IToDoListDao{
 	      }
 	}
 
+	
 	@Override
-	public void getTasks() throws TasksPlatformException {
+	public void getTasks(int userId) throws TasksPlatformException {
 		
 		  Session session = factory.openSession();
 	      Transaction tx = null;
 	      try{
 	         tx = session.beginTransaction();
-	         List tasks = session.createQuery("FROM TASK").list(); 
+	         List<Task> tasks = session.createQuery("FROM " + Task.class.getName()).list(); 
 	         for (Iterator iterator = tasks.iterator(); iterator.hasNext();){
 	            Task task = (Task) iterator.next(); 
-	            System.out.print("Task ID: " + task.getId()); 
-	            System.out.print("  Title: " + task.getTitle()); 
-	            System.out.println("  Body: " + task.getTaskBody()); 
+	            if( task.getUserId() == userId) {
+	            	System.out.print("Task ID: " + task.getTaskId()); 
+		            System.out.print("  Title: " + task.getTitle()); 
+		            System.out.println("  Body: " + task.getTaskBody());
+	            } 
 	         }
 	         tx.commit();
 	      }catch (HibernateException e) {
@@ -108,7 +106,7 @@ public class ToDoListDAO implements IToDoListDao{
 
 	
 	@Override
-	public void updateTask(int taskID, String title, String taskBody) throws TasksPlatformException {
+	public void updateTask(int userID, int taskID, String title, String taskBody) throws TasksPlatformException {
 		
 		  Session session = factory.openSession();
 	      Transaction tx = null;
@@ -116,11 +114,14 @@ public class ToDoListDAO implements IToDoListDao{
 	         tx = session.beginTransaction();
 	         Task task = (Task)session.get(Task.class, taskID); 
 	         
-	         task.setTitle(title);
-	         task.setTaskBody(taskBody);
-	         
-			 session.update(task); 
-	         tx.commit();
+	         if ( task.getUserId() == userID ) {
+	        	 
+	        	 task.setTitle(title);
+		         task.setTaskBody(taskBody);
+		         
+				 session.update(task); 
+		         tx.commit();
+	         }
 	         
 	      }catch (HibernateException e) {
 	         if (tx!=null) tx.rollback();
@@ -129,6 +130,31 @@ public class ToDoListDAO implements IToDoListDao{
 	         session.close(); 
 	      }
 	}
+
+	public int logIn(int userID, String mail, String password){
+		Session session = factory.openSession();
+	      Transaction tx = null;
+	      Integer id = null;
+	      
+	      try{
+	         tx = session.beginTransaction();
+	         User user = new User();
+	         user.setUserId(userID);
+	         user.setMail(mail);
+	         user.setPassword(password);
+	         
+	         id = (Integer) session.save(user); 
+	         tx.commit();
+	      }catch (HibernateException e) {
+	         if (tx!=null) tx.rollback();
+	         e.printStackTrace(); 
+	      }finally {
+	         session.close(); 
+	      }
+	      return id;
+		
+	}
+
 
 
 }
