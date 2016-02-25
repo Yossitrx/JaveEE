@@ -1,112 +1,133 @@
 package il.ac.shenkar.javaeeproject.model;
 
-import java.util.Iterator;
 import java.util.List;
-
 import org.hibernate.HibernateException; 
 import org.hibernate.Session; 
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.SessionFactory;
 
-public class ToDoListDAO implements IToDoListDao{
+/**
+ * IToDoListDAO implementation
+ */
+public class ToDoListDAO implements IToDoListDao , Iconsts{
 
-	
+	/**
+	 * ToDoListDAO instance (singleton)
+	 */
 	private static ToDoListDAO instance;
-	private static SessionFactory factory = new AnnotationConfiguration()
-			.configure()
-			.addAnnotatedClass(Task.class)
-			.addAnnotatedClass(User.class)
-			.buildSessionFactory();
 
+	/**
+	 * SessionFactory represent the current factory (initialize once on the get instance method)
+	 */
+	private static SessionFactory factory;
 	
+	/** 
+	 * constructor
+	 */
 	private ToDoListDAO() {}
 	
+	/** 
+	 * getInstance method
+	 * implements the design pattern Singleton on ToDoListDAO instance
+	 */
 	public static ToDoListDAO getInstance() {
 		
 		if (instance == null) {
 			instance = new ToDoListDAO();
+			factory = new AnnotationConfiguration()
+					.configure()
+					.addAnnotatedClass(Task.class)
+					.addAnnotatedClass(User.class)
+					.buildSessionFactory();
 		}
 		return instance;
 	}
 	
-	
-	
+	/*
+	* Just like at IToDoListDao - addTask
+	*/	
 	@Override
-	public int addTask(int userID, String title, String taskBody) throws TasksPlatformException {
+	public void addTask(Task task) throws TasksPlatformException {
 		
 		Session session = factory.openSession();
-	      Transaction tx = null;
-	      Integer id = null;
-	      
-	      try{
-	         tx = session.beginTransaction();
-	         Task task = new Task();
-	         task.setUserId(userID);
-	         task.setTitle(title);
-	         task.setTaskBody(taskBody);
-	         
-	         id = (Integer) session.save(task); 
-	         tx.commit();
-	      }catch (HibernateException e) {
-	         if (tx!=null) tx.rollback();
-	         e.printStackTrace(); 
-	      }finally {
-	         session.close(); 
-	      }
-	      return id;
+		Transaction tx = null;
+		try{
+		   tx = session.beginTransaction();
+		   session.save(task); 
+		   tx.commit();
+		}catch (HibernateException e) {
+		   if (tx != null) tx.rollback();
+		   throw new TasksPlatformException(ADD_TASK_FAILED + e.getMessage());
+		}finally {
+			try {
+				session.close();
+			} catch (HibernateException e){
+				throw new TasksPlatformException(CLOSE_FAILED + e.getMessage());
+			}
+		}
 	}
 
-	
+	/*
+	* Just like at IToDoListDAO - deleteTask
+	*/	
 	@Override
-	public void deleteTask(int userID, int taskID) throws TasksPlatformException {
+	public void deleteTask(String userName, int taskID) throws TasksPlatformException {
 		
 	      Session session = factory.openSession();
 	      Transaction tx = null;
 	      try{
 	         tx = session.beginTransaction();
 	         Task task = (Task)session.get(Task.class, taskID); 
-	         if ( userID == task.getUserId()) {
+	         if (userName.equals(task.getUserName())) {
 	        	 session.delete(task); 
 		         tx.commit(); 
+	         } else {
+	        	 throw new TasksPlatformException(TASK_ACCESS);
 	         }
 	      }catch (HibernateException e) {
-	         if (tx!=null) tx.rollback();
-	         e.printStackTrace(); 
+	         if (tx != null) tx.rollback();
+	         throw new TasksPlatformException(DELETE_TASK_FAILED + e.getMessage());
 	      }finally {
-	         session.close(); 
+	    	 try {
+	    		 session.close();
+	    	 } catch (HibernateException e){
+	    		 throw new TasksPlatformException(CLOSE_FAILED + e.getMessage());
+	    	 } 
 	      }
 	}
 
-	
+	/*
+	* Just like at IToDoListDao - getTasks
+	*/	
 	@Override
-	public void getTasks(int userId) throws TasksPlatformException {
+	public List<Task> getTasks(String userName) throws TasksPlatformException {
 		
 		  Session session = factory.openSession();
+		  List<Task> tasks = null;
 	      Transaction tx = null;
 	      try{
 	         tx = session.beginTransaction();
-	         List<Task> tasks = session.createQuery("FROM " + Task.class.getName()).list(); 
-	         for (Iterator iterator = tasks.iterator(); iterator.hasNext();){
-	            Task task = (Task) iterator.next(); 
-	            if( task.getUserId() == userId) {
-	            	System.out.print("Task ID: " + task.getTaskId()); 
-		            System.out.print("  Title: " + task.getTitle()); 
-		            System.out.println("  Body: " + task.getTaskBody());
-	            } 
-	         }
+	         tasks = session.createQuery("from "+ Task.class.getName() + " task where task.userName='" + userName +"'").list(); 
 	         tx.commit();
 	      }catch (HibernateException e) {
 	         if (tx!=null) tx.rollback();
-	         e.printStackTrace(); 
+	         throw new TasksPlatformException(GET_TASKS_FAILED + e.getMessage());
 	      }finally {
-	         session.close(); 
+	    	 try {
+	    		 session.close();
+	    	 } catch (HibernateException e){
+	    		 throw new TasksPlatformException(CLOSE_FAILED + e.getMessage());
+	    	 } 
 	      }
+	      return tasks;
 	}
 
-	
+	/*
+	* Just like at IToDoListDao - updateTask
+	*/	
 	@Override
-	public void updateTask(int userID, int taskID, String title, String taskBody) throws TasksPlatformException {
+	public void updateTask(int taskID, Task updatedTask) throws TasksPlatformException {
 		
 		  Session session = factory.openSession();
 	      Transaction tx = null;
@@ -114,47 +135,80 @@ public class ToDoListDAO implements IToDoListDao{
 	         tx = session.beginTransaction();
 	         Task task = (Task)session.get(Task.class, taskID); 
 	         
-	         if ( task.getUserId() == userID ) {
-	        	 
-	        	 task.setTitle(title);
-		         task.setTaskBody(taskBody);
-		         
+	         if ( updatedTask.getUserName().equals(task.getUserName()) ) {
+	
+	        	 task.setTitle(updatedTask.getTitle());
+		         task.setTaskBody(updatedTask.getTaskBody());		         
 				 session.update(task); 
 		         tx.commit();
 	         }
 	         
 	      }catch (HibernateException e) {
 	         if (tx!=null) tx.rollback();
-	         e.printStackTrace(); 
+	         throw new TasksPlatformException(UPDATE_TASK_FAILED);
 	      }finally {
-	         session.close(); 
+	    	 try {
+	    		 session.close();
+	    	 } catch (HibernateException e){
+	    		 throw new TasksPlatformException(CLOSE_FAILED);
+	    	 } 
 	      }
 	}
-
-	public int logIn(int userID, String mail, String password){
+	
+	/*
+	* Just like at IToDoListDao- signup
+	*/	
+	public User signup(User user) throws UserPlatformException{
+		Session session = factory.openSession();
+		Transaction tx = null;
+		int id = 0;
+		try{
+			tx = session.beginTransaction();
+			id = (Integer) session.save(user); 
+			tx.commit();
+		}catch (HibernateException e) {
+			if (tx!=null) tx.rollback();
+			throw new UserPlatformException(SIGN_UP_FAILED); 
+		}finally {
+			try {
+				session.close();
+			} catch (HibernateException e){
+				throw new UserPlatformException(CLOSE_FAILED);
+			} 
+		}
+		if (id != 0) {
+			return user;	
+		}
+		return null;
+	}	
+	
+	/*
+	* Just like at IToDoListDao - getUser
+	*/	
+	public User getUser(String mail, String password) throws UserPlatformException{
 		Session session = factory.openSession();
 	      Transaction tx = null;
-	      Integer id = null;
-	      
+	      //User tempUser = new User(mail, password);
+	      //User user = null;
+	      List<User> users = null;
 	      try{
 	         tx = session.beginTransaction();
-	         User user = new User();
-	         user.setUserId(userID);
-	         user.setMail(mail);
-	         user.setPassword(password);
-	         
-	         id = (Integer) session.save(user); 
+	         //user = (User)session.get(User.class, tempUser.getMail()); 
+	         users = session.createQuery("from " + User.class.getName() + " user where user.mail ='" + mail +"'").list();
 	         tx.commit();
 	      }catch (HibernateException e) {
 	         if (tx!=null) tx.rollback();
-	         e.printStackTrace(); 
+	         	throw new UserPlatformException(LOGIN_FAILED);
 	      }finally {
-	         session.close(); 
+	    	 try {
+	    		session.close();
+	    	 } catch(HibernateException e){
+	    		 throw new UserPlatformException(CLOSE_FAILED);
+	    	 }
 	      }
-	      return id;
-		
-	}
-
-
-
+	      if (users.size() > 0) {
+		      return users.get(0);	
+	      }
+	      return null;
+	}	
 }

@@ -1,12 +1,10 @@
-<%@ page language="java" 
-	import="java.util.* , il.ac.shenkar.javaeeproject.model.*"
-	contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Insert title here</title>
+		<title>TODO LIST</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 		<link rel="stylesheet" type="text/css" href="../css/main.css">
  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -14,24 +12,29 @@
 	</head>
 	<body>
 	
-	
 		<div class="container">
-			<h1 class="text-center">Add Task</h1>
-			<br>
-			<a href="tasklist" class="back-btn">Back to my tasks</a>
-			<hr><br>
-			<form action="insert" method="POST">
-				<label>Title  <input type="text" name="title"></label>
-				<label>Description  <input type="text" name="taskBody"/></label>
-				<input type="submit" name="insert" value="Apply"/>
-			</form>
+			<div class="col-lg-1 col-offset-6 centered">
+					<h1>Login</h1><br>
+					<form action="login" method="POST">
+						<div class="form-group">
+							<label>Mail<input type="text" name="mail" class="form-row form-control" placeholder="example@gmail.com" required autofocus ></label>
+						</div>
+						<div class="form-group">
+							<label>Password<input type="password" class="form-row form-control" name="pass" placeholder="Password" required></label>
+						</div>
+						<div class="form-group">
+						<button type="submit" name="login" class="login-btn btn btn-primary">LOGIN</button>	
+						<!-- <button type="submit" name=signupPage class="btn btn-primary">Signup</button> -->
+					</form>
+					<br><br>
+					<a href="signup" class="signup-label">SIGNUP</a>
+			</div>
 			<%
 				String result = (String) request.getAttribute("RESULT");
 				if(result != null) {
 					out.println("<h5 style='color:#e75853'>" + result + "</h5>");	
 				}
 			%>
-		</div>
-		
+		</div><!-- end container -->
 	</body>
 </html>

@@ -1,7 +1,6 @@
-<%@ page language="java" 
-		contentType="text/html; charset=UTF-8"
-    	pageEncoding="UTF-8"
-    	import="java.util.* , il.ac.shenkar.javaeeproject.model.*"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"
+    import="java.util.* , il.ac.shenkar.javaeeproject.model.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
@@ -13,16 +12,20 @@
  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	</head>
 	<body>
-	
-	
 		<div class="container">
-			<h1 class="text-center"> Task List </h1>
+			<%
+				User user = (User)session.getAttribute("user");
+				String mail = user.getMail();
+				out.write("<h1 class='text-center'> Welcome  " + mail.substring(0,mail.indexOf("@")) + "</h1>");
+				request.setAttribute("mail", mail);
+			%>
+			
 			<br>
 			<ul class="nav nav-tabs">
-			  <li role="presentation">
+			  <li role="presentation" class="active">
 			  	<a href="menu">Menu<span class="glyphicon glyphicon-home menuIcon"></a>
 			  </li>
-			  <li role="presentation" class="active">
+			  <li role="presentation">
 			  	<a href="taskslist">Task list<span class="glyphicon glyphicon-tasks menuIcon"></span></a>
 			  </li>
 			  <li role="presentation">
@@ -32,40 +35,10 @@
 			  	<a href="logout">Logout<span class="glyphicon glyphicon-off menuIcon"></span></a>
 			  </li>
 			</ul>
-			<br>
-			<%
-			
-				HashMap<Integer, Integer> idHash = new HashMap();
-				List<Task> tasks = (List<Task>) request.getAttribute("tasks");
-				out.println("<table class='table table-hover'>");
-				out.println("<thead><tr><th>id</th><th>title</th><th>description</th></tr></thead>");
-				for(int i=0; i<tasks.size(); i++) {
-					
-					int colNum = i+1;
-					idHash.put(colNum, tasks.get(i).getTaskId());
-					out.println("<tr><td>" + colNum + "</td><td>"+
-							tasks.get(i).getTitle() + "</td><td>"+ 
-							tasks.get(i).getTaskBody() + "</td></tr>");
-				}
-				
-				session.setAttribute("HASH", idHash);
-				out.println("</table>"); 
-			%>
-			
-			
-			<%
-				String result = (String) request.getAttribute("RESULT");
-				if(result != null) {
-					out.println("<h5 style='color:#91c459'>" + result + "</h5>");	
-				}
-			%>
-			<hr>
-			<ul class="nav nav-pills controllPills">  
- 			  <li><a href="addTask">Add Task</a></li>
-			  <li><a href="removetask">Remove Task</a></li>
-			  <li><a href="edittask">Edit Task</a></li>
-			</ul>
-
+			<br><br>
+			<div class="text-center">
+				menu
+			</div>
 		</div>
 	
 	</body>

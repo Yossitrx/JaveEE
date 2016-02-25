@@ -1,0 +1,38 @@
+
+.form-row , .login-btn{
+	width : 400px;
+	margin-bottom: 5px;
+}
+
+.signup-label {
+	color : #3f3f3f;
+}
+
+.menuIcon {
+	padding-left: 7px;
+}
+
+hr {
+	margin-top: 50px;
+}
+
+.controllPills {
+	margin-left: 180px;
+}
+
+.back-btn {
+	float: left;
+	text-decoretion : none;
+	padding: 10px 30px 10px 30px;
+	background: #1ba9df;
+	color: #fff;
+	border: 2px solid #1ba9df;
+	font-weight: bold;
+	transition: background 1s;
+}
+
+.back-btn:hover {
+	border: 2px solid #1ba9df;
+	background: #fff;
+	color: #1ba9df
+}

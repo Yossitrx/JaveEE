@@ -1,6 +1,4 @@
-<%@ page language="java" 
-	import="java.util.* , il.ac.shenkar.javaeeproject.model.*"
-	contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -14,16 +12,14 @@
 	</head>
 	<body>
 	
-	
 		<div class="container">
-			<h1 class="text-center">Add Task</h1>
+			<h1 class="text-center">Remove Task</h1>
 			<br>
 			<a href="tasklist" class="back-btn">Back to my tasks</a>
-			<hr><br>
-			<form action="insert" method="POST">
-				<label>Title  <input type="text" name="title"></label>
-				<label>Description  <input type="text" name="taskBody"/></label>
-				<input type="submit" name="insert" value="Apply"/>
+			<br><hr>
+			<form action="delete" method="POST">
+				<label>Task ID  <input type="text" name="id"></label>
+				<input type="submit" name="delete" value="Apply"/>
 			</form>
 			<%
 				String result = (String) request.getAttribute("RESULT");
@@ -32,6 +28,5 @@
 				}
 			%>
 		</div>
-		
 	</body>
 </html>

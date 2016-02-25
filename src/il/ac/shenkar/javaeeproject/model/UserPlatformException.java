@@ -1,17 +1,17 @@
 package il.ac.shenkar.javaeeproject.model;
 
 /**
- * TasksPlatformException Handles Tasks errors  
+ * UserPlatformException Handles Users errors
  */
-public class TasksPlatformException extends Exception{
+public class UserPlatformException extends Exception{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * constructor
 	 * @param msg
 	 */
-	public TasksPlatformException(String msg) {
+	public UserPlatformException(String msg) {
 		super(msg);
 	}
 	
@@ -20,7 +20,7 @@ public class TasksPlatformException extends Exception{
 	 * @param msg
 	 * @param throwable
 	 */
-	public TasksPlatformException(String msg, Throwable throwable) {
+	public UserPlatformException(String msg, Throwable throwable) {
 		super(msg,throwable);
 	}
 }
