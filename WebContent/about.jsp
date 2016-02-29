@@ -29,9 +29,9 @@
 			  </li>
 			</ul>
 			<br><br>
-			<div class="text-center">
-				About us .....				
-			</div>
+			<br>
+			<p>About The Application: this application will manage your tasks easily and professionally, you will be able to create delete and  update your tasks.</p><br>
+			<p>About us: Hey - Here is Mor Kasus & Yossi Azoulay students at SHENKAR.<br> we develop this application as a part of final project in JavaEE course with the best lecture Life Michael.</p>
 		</div>
 	</body>
 </html>

@@ -37,7 +37,7 @@
 			</ul>
 			<br><br>
 			<div class="text-center">
-				menu
+				<img src="../images/javaLogo.png">
 			</div>
 		</div>
 	
